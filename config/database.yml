@@ -1,0 +1,21 @@
+
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+docker_pg: &docker_pg
+  <<: *default
+  host: bp-interview-postgres.buyapowa.localhost
+  port: 5432
+  user: bpadmin
+  username: bpadmin
+  password: bp4you2day
+
+development:
+  <<: *docker_pg
+  database: buyapowa_dev
+
+test:
+  <<: *docker_pg
+  database: buyapowa_test

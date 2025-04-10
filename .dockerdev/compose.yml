@@ -1,0 +1,110 @@
+x-build: &build
+  build:
+    context: .
+    args:
+      RUBY_VERSION: "3.4.2"
+      PG_MAJOR: "16"
+      NODE_MAJOR: "22"
+  image: bp-interview:0.1
+  environment: &env
+    NODE_ENV: ${NODE_ENV:-development}
+    RAILS_ENV: ${RAILS_ENV:-development}
+  tmpfs:
+    - /tmp
+    - /app/tmp/pids
+
+x-app: &app
+  <<: *build
+  stdin_open: true
+  tty: true
+  command: /bin/bash
+  networks:
+    default:
+    bp_dev:
+      aliases:
+        # For various other apps to call apis
+        - buyapowa.localhost
+  volumes:
+    - ..:/app:cached
+    - bundle:/usr/local/bundle
+    - rails_cache:/app/tmp/cache
+    - history:/usr/local/hist
+    - ./.psqlrc:/root/.psqlrc:ro
+    - ~/.bundle:/app/.bundle
+  environment: &app_environment
+    <<: *env
+    DOCKERIZED: true
+    # Links to other dev containers
+    REDIS_URL: redis://redis:6379/
+    DEV_DATABASE_HOST: postgres
+    BOOTSNAP_CACHE_DIR: /usr/local/bundle/_bootsnap
+    # Subdue letter_opener
+    LAUNCHY_DRY_RUN: true
+    BROWSER: /dev/null
+    # This env variable is used by some tools (e.g., RuboCop) to store caches
+    XDG_DATA_HOME: /app/tmp/caches
+    # Dev tools
+    HISTFILE: /usr/local/hist/.bash_history
+    PSQL_HISTFILE: /usr/local/hist/.psql_history
+    IRB_HISTFILE: /usr/local/hist/.irb_history
+    RUBY_DEBUG_HISTORY_FILE: /usr/local/hist/.ruby_debug_history
+    EDITOR: vi
+  depends_on: &app_depends_on
+    postgres:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+
+services:
+  postgres:
+    container_name: bp-interview-postgres
+    image: postgres:16.7-alpine
+    environment:
+      POSTGRES_USER: bpadmin
+      POSTGRES_PASSWORD: bp4you2day
+      POSTGRES_HOST_AUTH_METHOD: trust
+    networks:
+      default:
+      bp_dev:
+        aliases:
+          - bp-interview-postgres.buyapowa.localhost
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: pg_isready -U bpadmin -h 127.0.0.1
+      interval: 5s
+  redis:
+    container_name: bp-interview-redis
+    image: redis:7.2-alpine
+    volumes:
+      - redis:/data
+    ports:
+      - 6379:6379
+    healthcheck:
+      test: redis-cli ping
+      interval: 1s
+      timeout: 3s
+      retries: 30
+  unexposed:
+    <<: *app
+    container_name: bp-interview-unexposed
+  exposed:
+    <<: *app
+    container_name: bp-interview-exposed
+    ports:
+      - "3000:3000"
+
+volumes:
+  bundle:
+  node_modules:
+  history:
+  rails_cache:
+  postgres:
+  redis:
+
+networks:
+  bp_dev:
+    external: true
+    name: bp_dev

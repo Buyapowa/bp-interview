@@ -1,0 +1,71 @@
+version: "8.2"
+
+compose:
+  files:
+    - .dockerdev/compose.yml
+  project_name: bp-interview
+
+interaction:
+  bash:
+    description: Get a shell
+    service: unexposed
+    command: /bin/bash
+    compose:
+      run_options: [no-deps]
+
+  bash_exposed:
+    description: Get a shell with web ports exposed
+    service: exposed
+    command: /bin/bash
+    compose:
+      run_options: [service-ports, use-aliases]
+
+  server:
+    description: Run Rails server
+    service: exposed
+    command: bundle exec puma -C ./config/puma.rb
+    compose:
+      run_options: [service-ports, use-aliases]
+
+  rails:
+    description: Run Rails commands
+    service: unexposed
+    command: bundle exec rails
+
+  rake:
+    description: Run Rake commands
+    service: unexposed
+    command: bundle exec rake
+
+  bundle:
+    description: Run Bundler commands
+    service: unexposed
+    command: bundle
+    compose:
+      run_options: [no-deps]
+
+  rspec:
+    description: Run RSpec commands
+    service: unexposed
+    environment:
+      RAILS_ENV: test
+    command: bundle exec rspec
+
+  dbreset:
+    description: Reset database
+    service: unexposed
+    command: bundle exec rake db:drop db:create db:migrate
+
+  psql:
+    description: Run Postgres psql console
+    service: postgres
+    default_args: buyapowa_dev
+    command: psql -h postgres -U bpadmin
+
+provision:
+  - docker network inspect bp_dev > /dev/null 2>&1 || docker network create bp_dev
+  - dip compose down --volumes
+  - dip compose up -d postgres redis
+  - dip bundle install
+  - dip dbreset
+  - dip dbreset_test
