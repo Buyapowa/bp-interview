@@ -56,6 +56,13 @@ interaction:
     service: unexposed
     command: bundle exec rake db:drop db:create db:migrate
 
+  dbreset_test:
+    description: Reset test database
+    service: unexposed
+    environment:
+      RAILS_ENV: test
+    command: bundle exec rake db:drop db:create db:migrate
+
   psql:
     description: Run Postgres psql console
     service: postgres
