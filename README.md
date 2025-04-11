@@ -11,4 +11,5 @@ Your task is to implement a simple URL Shortener service. The goal is to create 
 
 ## 💻 Get started
 
-Follow the [setup instructions](./getting_started.md) to get started.
+- Follow the [setup instructions](./getting_started.md) to get started.
+- Check out the [rails cheatsheet](./rails_cheatsheet.md) for reference if needed.
