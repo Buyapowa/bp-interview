@@ -1,19 +1,14 @@
-# bp-interview
+# 🧪 Technical Interview Task: URL Shortener Service
 
-## Setup
+## 🔧 Task
 
-1. Ensure you have docker + docker-compose installed (https://docs.docker.com/compose/gettingstarted/).
-   - Note: Make sure docker is install in rootless mode. This should be the default for most OSes except linux. If that isn't an option due to limitations, follow this guide to run docker commands as a non-root user https://docs.docker.com/engine/install/linux-postinstall/.
-2. Ensure you have the correct ruby version installed, this project is set up with ASDF (https://asdf-vm.com/guide/getting-started.html) or use your preferred version manager.
-   - Run `asdf install` to install the correct version of ruby.
-4. `gem install dip`.
-5. `dip provision` (note: this will also clear out the database).
-6. `dip server` to run the application on http://localhost:3000/.
+Your task is to implement a simple URL Shortener service. The goal is to create a small web service where users can submit a valid URL and receive a shortened version. When users navigate to the shortened URL, they should be redirected to the original URL.
 
-### Versions
-- Ruby 3.4.2
+## ✅ Acceptance Criteria
 
-### Tests
-`dip rspec`
+- As a user, I want to submit a valid URL and receive a shortened version of it.
+- As a user, when I visit the shortened URL in a browser, I should land at the correct destination.
 
----
+## 💻 Get started
+
+Follow the [setup instructions](./getting_started.md) to get started.
