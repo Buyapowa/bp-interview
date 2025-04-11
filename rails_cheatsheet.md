@@ -12,6 +12,63 @@ View the list of routes in your app:
 dip rails routes
 ```
 
+### Models
+Generate a new model and create a migration for the table.
+
+Note: Name models in Pascal case and singular.
+
+```bash
+dip rails g model Dog
+```
+
+Generate a model and create a migration with table columns.
+
+```bash
+dip rails g model Dog name:string age:integer
+```
+
+The migration automatically created for the above example:
+
+```ruby
+class CreateDogs < ActiveRecord::Migration[8.0]
+  def change
+    create_table :dogs do |t|
+      t.string :name
+      t.integer :age
+
+      t.timestamps
+    end
+  end
+end
+```
+
+Destroy the created model if you made a mistake (rollback first if you ran the migration):
+
+Note: you can use `rails d` (destroy) on any scaffolded code to clean up/remove all generated files.
+
+```bash
+dip rails d model Dog name:string age:integer
+```
+
+#### Migration
+
+Generate a migration to amend an existing table.
+
+```bash
+dip rails g migration AddUserToDogs user:references breed:string
+```
+
+The migration automatically created for the above example:
+
+```ruby
+class AddUserToDogs < ActiveRecord::Migration[8.0]
+  def change
+    add_reference :dogs, :user, null: false, foreign_key: true
+    add_column :dogs, :breed, :string
+  end
+end
+```
+
 Migrate the database:
 
 ```bash
@@ -22,36 +79,6 @@ Rollback the database:
 
 ```bash
 dip rails db:rollback
-```
-
-### Models
-Generate a model and create a migration for the table.
-
-Note: Name models in Pascal case and singular.
-
-```bash
-dip rails g model Book
-```
-
-Generate a model and create a migration with table columns.
-
-```bash
-dip rails g model Book title:string description:text
-```
-
-The migration automatically created for the above example:
-
-```ruby
-class CreateBooks < ActiveRecord::Migration
-  def change
-    create_table :books do |t|
-      t.string :title
-      t.text :description
-
-      t.timestamps null: false
-    end
-  end
-end
 ```
 
 ### Controllers
