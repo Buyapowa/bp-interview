@@ -1,0 +1,22 @@
+<p style="color: green"><%= notice %></p>
+
+<div>
+  <div>
+    <%= link_to "Back to users", users_path %>
+  </div>
+
+  <div id="<%= dom_id @user %>">
+    <h1><%= @user.full_name %></h1>
+
+    <dl>
+      <dt>User name:</dt>
+      <dd><%= @user.full_name %></dd>
+      <dt>Created at</dt>
+      <dd><%= @user.created_at %></dd>
+    </dl>
+  </div>
+
+  <div>
+    <%= button_to "Destroy this user", @user, method: :delete, form: { data: { turbo_confirm: 'Are you sure?' }} %>
+  </div>
+</div>
